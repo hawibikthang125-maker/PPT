@@ -1,0 +1,449 @@
+from pptx import Presentation
+from pptx.util import Inches, Pt
+from pptx.enum.text import PP_ALIGN
+from pptx.dml.color import RGBColor
+
+# Create presentation
+prs = Presentation()
+prs.slide_width = Inches(10)
+prs.slide_height = Inches(7.5)
+
+# Define color scheme
+TITLE_COLOR = RGBColor(0, 51, 102)  # Dark blue
+ACCENT_COLOR = RGBColor(204, 0, 0)  # Red
+TEXT_COLOR = RGBColor(51, 51, 51)   # Dark gray
+
+def add_title_slide(prs, title, subtitle):
+    """Add title slide"""
+    slide = prs.slides.add_slide(prs.slide_layouts[6])  # Blank layout
+    background = slide.background
+    fill = background.fill
+    fill.solid()
+    fill.fore_color.rgb = RGBColor(240, 240, 240)
+    
+    # Title
+    title_box = slide.shapes.add_textbox(Inches(0.5), Inches(2.5), Inches(9), Inches(1.5))
+    title_frame = title_box.text_frame
+    title_frame.word_wrap = True
+    title_p = title_frame.paragraphs[0]
+    title_p.text = title
+    title_p.font.size = Pt(60)
+    title_p.font.bold = True
+    title_p.font.color.rgb = TITLE_COLOR
+    title_p.alignment = PP_ALIGN.CENTER
+    
+    # Subtitle
+    subtitle_box = slide.shapes.add_textbox(Inches(0.5), Inches(4.2), Inches(9), Inches(1))
+    subtitle_frame = subtitle_box.text_frame
+    subtitle_p = subtitle_frame.paragraphs[0]
+    subtitle_p.text = subtitle
+    subtitle_p.font.size = Pt(28)
+    subtitle_p.font.color.rgb = ACCENT_COLOR
+    subtitle_p.alignment = PP_ALIGN.CENTER
+    
+    return slide
+
+def add_content_slide(prs, title, content_list):
+    """Add content slide with bullet points"""
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+    background = slide.background
+    fill = background.fill
+    fill.solid()
+    fill.fore_color.rgb = RGBColor(255, 255, 255)
+    
+    # Add title bar
+    title_shape = slide.shapes.add_shape(1, Inches(0), Inches(0), Inches(10), Inches(1))
+    title_shape.fill.solid()
+    title_shape.fill.fore_color.rgb = TITLE_COLOR
+    title_shape.line.color.rgb = TITLE_COLOR
+    
+    # Title text
+    title_frame = title_shape.text_frame
+    title_p = title_frame.paragraphs[0]
+    title_p.text = title
+    title_p.font.size = Pt(44)
+    title_p.font.bold = True
+    title_p.font.color.rgb = RGBColor(255, 255, 255)
+    title_p.space_before = Pt(10)
+    title_p.space_after = Pt(10)
+    
+    # Content box
+    content_box = slide.shapes.add_textbox(Inches(0.75), Inches(1.5), Inches(8.5), Inches(5.5))
+    text_frame = content_box.text_frame
+    text_frame.word_wrap = True
+    
+    for i, item in enumerate(content_list):
+        if i == 0:
+            p = text_frame.paragraphs[0]
+        else:
+            p = text_frame.add_paragraph()
+        
+        p.text = item
+        p.font.size = Pt(20)
+        p.font.color.rgb = TEXT_COLOR
+        p.level = 0
+        p.space_before = Pt(6)
+        p.space_after = Pt(6)
+    
+    return slide
+
+def add_two_column_slide(prs, title, left_title, left_content, right_title, right_content):
+    """Add two-column layout slide"""
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+    background = slide.background
+    fill = background.fill
+    fill.solid()
+    fill.fore_color.rgb = RGBColor(255, 255, 255)
+    
+    # Title bar
+    title_shape = slide.shapes.add_shape(1, Inches(0), Inches(0), Inches(10), Inches(0.8))
+    title_shape.fill.solid()
+    title_shape.fill.fore_color.rgb = TITLE_COLOR
+    title_shape.line.color.rgb = TITLE_COLOR
+    
+    title_frame = title_shape.text_frame
+    title_p = title_frame.paragraphs[0]
+    title_p.text = title
+    title_p.font.size = Pt(40)
+    title_p.font.bold = True
+    title_p.font.color.rgb = RGBColor(255, 255, 255)
+    
+    # Left column
+    left_title_box = slide.shapes.add_textbox(Inches(0.5), Inches(1.2), Inches(4), Inches(0.4))
+    left_title_frame = left_title_box.text_frame
+    left_title_p = left_title_frame.paragraphs[0]
+    left_title_p.text = left_title
+    left_title_p.font.size = Pt(22)
+    left_title_p.font.bold = True
+    left_title_p.font.color.rgb = ACCENT_COLOR
+    
+    left_content_box = slide.shapes.add_textbox(Inches(0.5), Inches(1.8), Inches(4), Inches(5))
+    left_frame = left_content_box.text_frame
+    left_frame.word_wrap = True
+    
+    for i, item in enumerate(left_content):
+        if i == 0:
+            p = left_frame.paragraphs[0]
+        else:
+            p = left_frame.add_paragraph()
+        p.text = item
+        p.font.size = Pt(16)
+        p.font.color.rgb = TEXT_COLOR
+        p.space_after = Pt(8)
+    
+    # Right column
+    right_title_box = slide.shapes.add_textbox(Inches(5.5), Inches(1.2), Inches(4), Inches(0.4))
+    right_title_frame = right_title_box.text_frame
+    right_title_p = right_title_frame.paragraphs[0]
+    right_title_p.text = right_title
+    right_title_p.font.size = Pt(22)
+    right_title_p.font.bold = True
+    right_title_p.font.color.rgb = ACCENT_COLOR
+    
+    right_content_box = slide.shapes.add_textbox(Inches(5.5), Inches(1.8), Inches(4), Inches(5))
+    right_frame = right_content_box.text_frame
+    right_frame.word_wrap = True
+    
+    for i, item in enumerate(right_content):
+        if i == 0:
+            p = right_frame.paragraphs[0]
+        else:
+            p = right_frame.add_paragraph()
+        p.text = item
+        p.font.size = Pt(16)
+        p.font.color.rgb = TEXT_COLOR
+        p.space_after = Pt(8)
+    
+    return slide
+
+# Slide 1: Title Slide
+add_title_slide(prs, "Design of Prestressed Concrete", "Structural Engineering")
+
+# Slide 2: Introduction
+add_content_slide(prs, "Introduction to Prestressed Concrete", [
+    "• Definition: Concrete with internal stresses introduced to improve its performance",
+    "• Objective: Counteract tensile stresses from external loads",
+    "• Advantages: Increased load capacity, reduced cracking, longer span capability",
+    "• Applications: Bridges, buildings, parking structures, water tanks",
+    "• Historical development: Introduced by Eugène Freyssinet in 1928"
+])
+
+# Slide 3: Basic Concepts
+add_two_column_slide(prs, "Basic Concepts",
+    "Prestressing Principle", [
+        "• Apply compressive stress to concrete before loading",
+        "• Counteracts tensile stresses from permanent and live loads",
+        "• Reduces or eliminates cracking",
+        "• Improves durability and service life"
+    ],
+    "Benefits", [
+        "✓ Increased moment capacity",
+        "✓ Reduced deflection",
+        "✓ Better crack control",
+        "✓ Extended span lengths",
+        "✓ Thinner members possible"
+    ]
+)
+
+# Slide 4: Types of Prestressing
+add_two_column_slide(prs, "Types of Prestressing",
+    "Pre-tensioning", [
+        "• Tendons are tensioned before concrete is cast",
+        "• Tension is released after concrete gains strength",
+        "• Force transferred to concrete by bond",
+        "• Commonly used for precast elements",
+        "• Efficient for short to medium spans"
+    ],
+    "Post-tensioning", [
+        "• Tendons are tensioned after concrete sets",
+        "• Uses ducts or sleeves in concrete",
+        "• Allows for longer spans",
+        "• More flexible design",
+        "• Better for heavy loads and long structures"
+    ]
+)
+
+# Slide 5: Materials
+add_content_slide(prs, "Materials for Prestressed Concrete", [
+    "High-Strength Concrete:",
+    "  - Minimum 28-day strength: 5000-7000 PSI (35-50 MPa)",
+    "  - Lower creep and shrinkage compared to normal concrete",
+    "",
+    "Prestressing Steel (Tendons):",
+    "  - High-strength steel wires or strands",
+    "  - Yield strength: 250-280 ksi (1725-1930 MPa)",
+    "  - Common: 7-wire strands, single wires, bars"
+])
+
+# Slide 6: Design Process
+add_content_slide(prs, "Design Process Overview", [
+    "1. Determine Service Loads and Load Combinations",
+    "2. Select Member Type and Configuration",
+    "3. Estimate Prestress Force and Eccentricity",
+    "4. Check Stresses at Transfer and Service Load",
+    "5. Verify Ultimate Load Capacity",
+    "6. Check Deflection and Cracking Limits",
+    "7. Detail Reinforcement and Bearing Areas",
+    "8. Prepare Construction Drawings"
+])
+
+# Slide 7: Stress Analysis
+add_two_column_slide(prs, "Stress Analysis",
+    "Initial Stresses (Transfer)", [
+        "• Top fiber: Compression from prestress",
+        "• Bottom fiber: May have tension (limited)",
+        "• Applied force: P = Prestressing force",
+        "• Eccentricity: e = Distance from neutral axis",
+        "• Formula: f = P/A ± (P·e)/I"
+    ],
+    "Service Load Stresses", [
+        "• Superposition of loads",
+        "• Allowable compression: 0.45 f'c",
+        "• Allowable tension: 6√f'c (limited)",
+        "• Check stresses at mid-span",
+        "• Verify stress distribution"
+    ]
+)
+
+# Slide 8: Losses in Prestress
+add_content_slide(prs, "Losses in Prestressing Force", [
+    "Immediate Losses (Time = 0):",
+    "  • Elastic shortening of concrete",
+    "  • Slip at anchorages (post-tensioning)",
+    "  • Friction in ducts (post-tensioning)",
+    "",
+    "Time-Dependent Losses:",
+    "  • Creep of concrete",
+    "  • Shrinkage of concrete",
+    "  • Relaxation of steel",
+    "",
+    "Total losses typically: 15-25% of initial prestress"
+])
+
+# Slide 9: Flexural Design
+add_two_column_slide(prs, "Flexural Design Considerations",
+    "Strength Requirements", [
+        "• Calculate factored loads (LRFD)",
+        "• Dead load factor: 1.2",
+        "• Live load factor: 1.6",
+        "• Find required prestress force",
+        "• Check capacity > demand"
+    ],
+    "Serviceability Requirements", [
+        "• Limit compression stress",
+        "• Control cracking",
+        "• Limit deflection (L/240)",
+        "• Verify stress limits at transfer",
+        "• Check end zone stresses"
+    ]
+)
+
+# Slide 10: Shear Design
+add_content_slide(prs, "Shear Design in Prestressed Concrete", [
+    "Critical Sections:",
+    "  • Located at distance d from support",
+    "  • Prestressing force affects shear capacity",
+    "",
+    "Shear Capacity Components:",
+    "  • Concrete contribution (Vc): Includes prestress benefit",
+    "  • Stirrup contribution (Vs): Transverse reinforcement",
+    "  • Formula: Vn = Vc + Vs",
+    "",
+    "Design Checks:",
+    "  • Shear capacity must exceed applied shear",
+    "  • Minimum stirrups required"
+])
+
+# Slide 11: Anchorage and Bearing
+add_two_column_slide(prs, "Anchorage and Bearing Design",
+    "Anchorage Zone", [
+        "• Region near tendon anchorage",
+        "• Concentration of prestress force",
+        "• Bursting stresses develop",
+        "• Requires reinforcement",
+        "• Length: ~1.5 × member depth"
+    ],
+    "Bearing Stresses", [
+        "• Stresses under anchor plates",
+        "• Limited by concrete strength",
+        "• Bearing plate design required",
+        "• Dispersal of concentrated load",
+        "• Stresses must be within limits"
+    ]
+)
+
+# Slide 12: Code Requirements
+add_content_slide(prs, "Code Requirements (ACI 318)", [
+    "Design Standards:",
+    "  • ACI 318 Building Code Requirements",
+    "  • ASCE 7 Loads and Exposures",
+    "  • PCI Design Handbook (for precast)",
+    "",
+    "Material Requirements:",
+    "  • Minimum concrete strength: f'c = 3500 psi (24 MPa)",
+    "  • High-strength steel: fy ≥ 150 ksi for tendons",
+    "",
+    "Limit States:",
+    "  • Ultimate (Strength): LRFD factors",
+    "  • Service (Serviceability): Stress limitations",
+    "  • Fatigue (if applicable)"
+])
+
+# Slide 13: Example Problem
+add_content_slide(prs, "Design Example: Prestressed Beam", [
+    "Given:",
+    "  • Span = 60 ft, f'c = 5000 psi, Tendons = 6 strands",
+    "  • Dead load = 1.5 k/ft, Live load = 1.0 k/ft",
+    "",
+    "Solution Steps:",
+    "  1. Assume beam dimensions (I-section)",
+    "  2. Calculate sectional properties (A, I, yb, yt)",
+    "  3. Estimate initial prestress force",
+    "  4. Verify stresses at transfer and service",
+    "  5. Check flexural and shear capacity",
+    "  6. Refine design if necessary"
+])
+
+# Slide 14: Quality Control
+add_two_column_slide(prs, "Quality Control and Testing",
+    "Pre-Construction", [
+        "• Material certifications",
+        "• Design review",
+        "• Concrete mix design",
+        "• Steel mill test reports",
+        "• Form and equipment inspection"
+    ],
+    "During Construction", [
+        "• Concrete strength testing",
+        "• Release force verification",
+        "• Post-tension force monitoring",
+        "• Dimension checks",
+        "• Load testing procedures"
+    ]
+)
+
+# Slide 15: Common Applications
+add_content_slide(prs, "Common Applications", [
+    "Highway Bridges:",
+    "  • Precast prestressed I-beams",
+    "  • Spans up to 150+ feet",
+    "",
+    "Building Systems:",
+    "  • Hollow core slabs",
+    "  • Double tees, single tees",
+    "  • Beams and columns",
+    "",
+    "Special Structures:",
+    "  • Water tanks and reservoirs",
+    "  • Parking structures",
+    "  • Long-span roof systems"
+])
+
+# Slide 16: Design Challenges
+add_two_column_slide(prs, "Design Challenges and Solutions",
+    "Common Challenges", [
+        "• Accurate loss calculations",
+        "• Bursting stress at anchorages",
+        "• Cracking in end zones",
+        "• Corrosion protection",
+        "• Construction sequencing"
+    ],
+    "Solutions", [
+        "✓ Use refined loss models",
+        "✓ Provide anchorage reinforcement",
+        "✓ Design bearing plates properly",
+        "✓ Protect tendons (grouting/coating)",
+        "✓ Plan construction steps carefully"
+    ]
+)
+
+# Slide 17: Sustainability
+add_content_slide(prs, "Sustainability Benefits", [
+    "Environmental Advantages:",
+    "  • Thinner sections reduce material use",
+    "  • Longer spans reduce number of supports",
+    "  • Precast elements improve quality and reduce waste",
+    "",
+    "Economic Benefits:",
+    "  • Extended service life",
+    "  • Reduced maintenance costs",
+    "  • Better durability in harsh environments",
+    "  • Faster construction with precast elements"
+])
+
+# Slide 18: Future Trends
+add_content_slide(prs, "Future Trends in Prestressed Concrete", [
+    "• Advanced materials: Ultra-high-performance concrete (UHPC)",
+    "• New reinforcement: Carbon fiber and aramid tendons",
+    "• Smart monitoring: Embedded sensors for condition assessment",
+    "• Optimization: Topology optimization for optimal designs",
+    "• Sustainability: Reduced carbon footprint concrete mixes",
+    "• Integration: Building information modeling (BIM) for design and construction"
+])
+
+# Slide 19: Key Takeaways
+add_content_slide(prs, "Key Takeaways", [
+    "✓ Prestressed concrete is a proven technology for long spans",
+    "✓ Two main types: pre-tensioning and post-tensioning",
+    "✓ Design involves stress analysis at transfer and service loads",
+    "✓ Losses in prestress must be carefully evaluated",
+    "✓ Code requirements ensure safety and performance",
+    "✓ Quality control is critical for successful construction"
+])
+
+# Slide 20: References & Contact
+add_content_slide(prs, "References & Resources", [
+    "Standards:",
+    "  • ACI 318-19 Building Code Requirements for Structural Concrete",
+    "  • PCI Design Handbook: Precast and Prestressed Concrete",
+    "",
+    "Recommended Reading:",
+    "  • \"Design of Prestressed Concrete Structures\" by T.Y. Lin",
+    "  • \"Reinforced Concrete\" by James K. Wight and James G. MacGregor",
+    "",
+    "For more information: [Your Contact Information]"
+])
+
+# Save presentation
+prs.save('Prestressed_Concrete_Design.pptx')
+print("Presentation created successfully: Prestressed_Concrete_Design.pptx")
